@@ -2,13 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
-  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Difficulty } from '../../common/types/difficulty.type';
 import { CandidateFieldsConfigDto } from '../../common/types/candidate-fields.type';
 
 export class CreateQuizDto {
@@ -35,10 +33,6 @@ export class CreateQuizDto {
   @IsOptional()
   @IsNumber()
   passingScore?: number;
-
-  @ApiProperty({ enum: Difficulty })
-  @IsEnum(Difficulty)
-  difficulty!: Difficulty;
 
   @ApiProperty({ required: false })
   @IsOptional()
