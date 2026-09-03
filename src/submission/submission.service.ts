@@ -17,11 +17,12 @@ export class SubmissionService {
     @InjectModel(Quiz.name) private quizModel: Model<QuizDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
     private gradingService: GradingService,
-  ) {}
+  ) { }
 
   async create(dto: CreateSubmissionDto) {
     const quiz = await this.quizModel.findById(dto.quizId);
     if (!quiz) throw new NotFoundException('Quiz not found');
+    console.log('CREATE submission — dto.quizId:', dto.quizId, '| quiz._id:', quiz._id.toString());
     const now = new Date();
     const created = await this.submissionModel.create({
       quizId: quiz._id,
@@ -32,6 +33,7 @@ export class SubmissionService {
       startedAt: now,
       status: 'in_progress',
     } as any);
+    console.log('CREATED submission with quizId:', created.quizId.toString(), '| submission _id:', created._id.toString());
     return created.toJSON();
   }
 
@@ -123,8 +125,17 @@ export class SubmissionService {
     return { ...updated, id: updated._id?.toString() };
   }
 
+  async remove(id: string) {
+    const submission = await this.submissionModel.findById(id);
+    if (!submission) throw new NotFoundException('Submission not found');
+    await submission.deleteOne();
+    return { success: true };
+  }
+
   async findByQuiz(quizId: string) {
+    console.log('findByQuiz called with:', quizId, typeof quizId);
     const subs = await this.submissionModel.find({ quizId }).sort({ createdAt: -1 }).lean();
+    console.log('found:', subs.length);
     return subs.map((s) => ({ ...s, id: s._id?.toString() }));
   }
 }

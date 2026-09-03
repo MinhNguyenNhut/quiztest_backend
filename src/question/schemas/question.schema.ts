@@ -61,11 +61,11 @@ export const MatchingPairSchema = SchemaFactory.createForClass(MatchingPair);
 
 @Schema({ _id: false })
 export class RichTextContent implements RichTextContentDto {
-  @Prop({ required: true })
-  html!: string;
+  @Prop({ required: false })
+  html?: string;
 
-  @Prop({ required: true })
-  text!: string;
+  @Prop({ required: false })
+  text?: string;
 }
 
 export const RichTextContentSchema =

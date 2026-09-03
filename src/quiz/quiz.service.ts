@@ -12,7 +12,7 @@ export class QuizService {
   constructor(
     @InjectModel(Quiz.name) private quizModel: Model<QuizDocument>,
     @InjectModel(Question.name) private questionModel: Model<QuestionDocument>,
-  ) {}
+  ) { }
 
   async create(dto: CreateQuizDto) {
     const created = await this.quizModel.create(dto as any);
@@ -26,7 +26,11 @@ export class QuizService {
       this.quizModel.countDocuments(),
     ]);
     return {
-      data: items.map((i) => ({ ...i, id: i._id?.toString() })),
+      data: items.map((i) => ({
+        ...i,
+        id: i._id?.toString(),
+        questionCount: i.questionIds?.length ?? 0,
+      })),
       meta: {
         total,
         page,
@@ -40,8 +44,12 @@ export class QuizService {
     const quiz = await this.quizModel.findById(id).lean();
     if (!quiz) throw new NotFoundException('Quiz not found');
     const questions = await this.questionModel.find({ quizId: quiz._id }).sort({ order: 1 }).lean();
-    // map ids
-    return { ...quiz, id: quiz._id.toString(), questions: questions.map((q) => ({ ...q, id: q._id?.toString() })) };
+    return {
+      ...quiz,
+      id: quiz._id.toString(),
+      questions: questions.map((q) => ({ ...q, id: q._id?.toString() })),
+      questionCount: questions.length,
+    };
   }
 
   async update(id: string, dto: UpdateQuizDto) {

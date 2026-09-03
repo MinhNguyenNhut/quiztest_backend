@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, Param } from '@nestjs/common';
 import { SubmissionService } from './submission.service';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
@@ -36,6 +36,11 @@ export class SubmissionController {
   @Post(':id/submit')
   submit(@Param('id') id: string, @Body() dto: SubmitSubmissionDto) {
     return this.submissionService.submit(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.submissionService.remove(id);
   }
 
   @Get('quiz/:quizId')

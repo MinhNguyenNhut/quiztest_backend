@@ -24,13 +24,15 @@ export enum QuestionType {
 }
 
 export class RichTextContentDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  html!: string;
+  html?: string;
 
-  @ApiProperty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  text!: string;
+  text?: string;
 }
 
 export class BlankDefinitionDto {

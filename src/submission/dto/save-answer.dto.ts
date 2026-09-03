@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsObject, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsObject, IsString } from 'class-validator';
 
 export class SaveAnswerDto {
   @ApiProperty()
@@ -9,7 +8,5 @@ export class SaveAnswerDto {
 
   @ApiProperty({ type: Object })
   @IsObject()
-  @ValidateNested()
-  @Type(() => Object)
   value!: Record<string, any>;
 }
