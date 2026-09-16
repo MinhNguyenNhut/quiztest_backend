@@ -2,7 +2,6 @@ import { Injectable, NotFoundException, BadRequestException, ForbiddenException 
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
-import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { Submission, SubmissionDocument } from './schemas/submission.schema';
 import { Quiz, QuizDocument } from '../quiz/schemas/quiz.schema';
 import { Question, QuestionDocument } from '../question/schemas/question.schema';
@@ -22,7 +21,6 @@ export class SubmissionService {
   async create(dto: CreateSubmissionDto) {
     const quiz = await this.quizModel.findById(dto.quizId);
     if (!quiz) throw new NotFoundException('Quiz not found');
-    console.log('CREATE submission — dto.quizId:', dto.quizId, '| quiz._id:', quiz._id.toString());
     const now = new Date();
     const created = await this.submissionModel.create({
       quizId: quiz._id,
@@ -33,7 +31,6 @@ export class SubmissionService {
       startedAt: now,
       status: 'in_progress',
     } as any);
-    console.log('CREATED submission with quizId:', created.quizId.toString(), '| submission _id:', created._id.toString());
     return created.toJSON();
   }
 
@@ -133,9 +130,13 @@ export class SubmissionService {
   }
 
   async findByQuiz(quizId: string) {
-    console.log('findByQuiz called with:', quizId, typeof quizId);
-    const subs = await this.submissionModel.find({ quizId }).sort({ createdAt: -1 }).lean();
-    console.log('found:', subs.length);
+    if (!Types.ObjectId.isValid(quizId)) {
+      throw new BadRequestException('Invalid quizId');
+    }
+    const subs = await this.submissionModel
+      .find({ quizId: new Types.ObjectId(quizId) })
+      .sort({ createdAt: -1 })
+      .lean();
     return subs.map((s) => ({ ...s, id: s._id?.toString() }));
   }
 }
