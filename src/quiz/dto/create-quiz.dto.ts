@@ -8,6 +8,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CandidateFieldsConfigDto } from '../../common/types/candidate-fields.type';
+import { QuizSettingsDto } from './quiz-settings.dto';
 
 export class CreateQuizDto {
   @ApiProperty()
@@ -45,9 +46,14 @@ export class CreateQuizDto {
   @Type(() => CandidateFieldsConfigDto)
   candidateFieldsConfig?: CandidateFieldsConfigDto;
 
+  @ApiProperty({ type: QuizSettingsDto, required: false }) // <-- Add this
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => QuizSettingsDto)
+  settings?: QuizSettingsDto;
+
   @ApiProperty({ type: [String], required: false })
   @IsOptional()
   @IsArray()
   questionIds?: string[];
 }
-

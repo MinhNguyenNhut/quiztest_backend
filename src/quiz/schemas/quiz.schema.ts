@@ -40,6 +40,10 @@ export class Quiz {
   @Prop({ type: MongooseSchema.Types.Mixed })
   candidateFieldsConfig?: CandidateFieldsConfigDto;
 
+  @ApiProperty({ type: Object, required: false }) // <-- Add this block
+  @Prop({ type: MongooseSchema.Types.Mixed, default: null })
+  settings?: any; 
+
   @ApiProperty({ type: [String] })
   @Prop({ type: [Types.ObjectId], ref: 'Question', default: [] })
   questionIds!: Types.ObjectId[];

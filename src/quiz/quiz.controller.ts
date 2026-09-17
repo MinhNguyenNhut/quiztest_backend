@@ -6,7 +6,7 @@ import { ReorderQuestionsDto } from './dto/reorder-questions.dto';
 
 @Controller('api/quizzes')
 export class QuizController {
-  constructor(private readonly quizService: QuizService) {}
+  constructor(private readonly quizService: QuizService) { }
 
   @Post()
   create(@Body() createQuizDto: CreateQuizDto) {
@@ -16,6 +16,15 @@ export class QuizController {
   @Get()
   findAll(@Query('page') page = '1', @Query('limit') limit = '20') {
     return this.quizService.findAll(Number(page), Number(limit));
+  }
+
+  @Get('user/:userId')
+  findByUser(
+    @Param('userId') userId: string,
+    @Query('page') page = '1',
+    @Query('limit') limit = '20',
+  ) {
+    return this.quizService.findByUser(userId, Number(page), Number(limit));
   }
 
   @Get(':id')

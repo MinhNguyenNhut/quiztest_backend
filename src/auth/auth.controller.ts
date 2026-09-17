@@ -14,7 +14,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly users: UserService,
-  ) {}
+  ) { }
 
   @Post('register')
   register(@Body() dto: RegisterDto) {
@@ -32,6 +32,6 @@ export class AuthController {
   async me(@CurrentUser() current: AuthUser) {
     const user = await this.users.findById(current.id);
     if (!user) throw new UnauthorizedException('User not found');
-    return user;
+    return this.users.toSafeUser(user);
   }
 }

@@ -87,4 +87,26 @@ export class QuizService {
     const questions = await this.questionModel.find({ quizId: quiz._id }).sort({ order: 1 }).lean();
     return questions.map((q) => ({ ...q, id: q._id?.toString() }));
   }
+
+  async findByUser(userId: string, page = 1, limit = 20) {
+    const skip = (page - 1) * limit;
+    const filter = { createdBy: userId };
+    const [items, total] = await Promise.all([
+      this.quizModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      this.quizModel.countDocuments(filter),
+    ]);
+    return {
+      data: items.map((i) => ({
+        ...i,
+        id: i._id?.toString(),
+        questionCount: i.questionIds?.length ?? 0,
+      })),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 }

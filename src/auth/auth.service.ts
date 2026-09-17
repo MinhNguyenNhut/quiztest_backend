@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { RegisterDto } from './dto/register.dto';
@@ -19,6 +19,9 @@ export class AuthService {
       throw new UnauthorizedException('Email already registered');
     }
     const user = await this.users.create(dto.email, dto.password, dto.role ?? UserRole.OWNER, dto.name);
+    if (!user) {
+      throw new InternalServerErrorException('Failed to create user');
+    }
     return {
       token: this.signToken(user.id, user.email, user.role),
       user,
@@ -31,6 +34,9 @@ export class AuthService {
     const ok = await this.users.validatePassword(dto.password, found.passwordHash);
     if (!ok) throw new UnauthorizedException('Invalid credentials');
     const user = this.users.toSafeUser({ ...found, _id: found._id });
+    if (!user) {
+      throw new InternalServerErrorException('Failed to load user');
+    }
     return {
       token: this.signToken(user.id, user.email, user.role),
       user,
